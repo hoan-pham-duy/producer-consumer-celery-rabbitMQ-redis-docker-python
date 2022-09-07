@@ -22,11 +22,31 @@ $ docker ps
 ```
 
 ## Usage
+Check all the docker containers:
+```bash
+docker ps -a
+```
+Watch real-time logs worker:
+```bash
+docker logs --follow {docker_celery_consumer_name}
+```
 Run producer:
 ```bash
 python3 -m pip install -r requirements.txt
 python3 producer.py
 ```
+Check KEYS in Redis
+Install redis-cli as https://redis.io/docs/getting-started/installation/install-redis-on-linux/
+Access Redis:
+```bash
+redis-cli -h 0.0.0.0 -p 6379
+```
+GET a specific Key in Redis:
+```bash
+0.0.0.0:6379> KEYS *
+GET celery-task-meta-a48306c8-10cf-4acb-a8cd-f39027ca90ce
+```
+
 Spin up a new terminal and start the celery worker:
 ```bash
 $ celery -A consumer_tasks worker -l info --pool=solo
