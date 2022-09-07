@@ -1,16 +1,13 @@
-# python-asynchronous-tasks
+# Producer-Consumer-Celery-RabbitMQ-Redis-Docker-Python 
 </hr>
 
-##  Setup & Installation 
-Create a virtual environment and install the dependencies:
+##  Setup & Installation
+Build Docker Consumer Image:
 ```bash
-$ python -m venv venv
-$ source env/bin/activate
-
-$ pip install -r requirements.txt
+cp Dockerfile_consumer Dockerfile && docker build -t celery_consumer .
 ```
 
-Start redis and rabbitmq services with `docker-compose`:
+Start redis, rabbitmq, and consumer services with `docker-compose`:
 ```bash
 docker-compose up -d
 ```
@@ -25,23 +22,28 @@ $ docker ps
 ```
 
 ## Usage
+Run producer:
+```bash
+python3 -m pip install -r requirements.txt
+python3 producer.py
+```
 Spin up a new terminal and start the celery worker:
 ```bash
-$ celery -A tasks worker -l info --pool=solo
+$ celery -A consumer_tasks worker -l info --pool=solo
 ```
 Send a task to celery worker to verify that it's working as excepted:
-Open a new terminal and get inside python interactive shell, import `say_hello` function from `tasks.py` and then call it with `delay()`
+Open a new terminal and get inside python interactive shell, import `say_hello` function from `consumer_tasks.py` and then call it with `delay()`
 
 ```python
 $ python
->>> from tasks import say_hello
+>>> from consumer_tasks import say_hello
 >>> say_hello.delay("Valon")
 <AsyncResult: 5711efdc-17c7-4f02-bfba-d193c3d28c42>
 ```
 And in the celery terminal that we started the worker before we should except a result similar to:
 ```
-INFO/MainProcess] Received task: tasks.say_hello[5711efdc-17c7-4f02-bfba-d193c3d28c42]
-INFO/MainProcess] Task tasks.say_hello[5711efdc-17c7-4f02-bfba-d193c3d28c42] succeeded in 5.01600000000326s: 'Hello Valon'
+INFO/MainProcess] Received task: consumer_tasks.say_hello[5711efdc-17c7-4f02-bfba-d193c3d28c42]
+INFO/MainProcess] Task consumer_tasks.say_hello[5711efdc-17c7-4f02-bfba-d193c3d28c42] succeeded in 5.01600000000326s: 'Hello Valon'
 ```
 
 ## What to do next?
